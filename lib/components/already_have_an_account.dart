@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:login_ui/Screens/welcome/welcome_screen.dart';
 
 import '../constant.dart';
 
