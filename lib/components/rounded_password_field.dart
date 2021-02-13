@@ -19,6 +19,7 @@ class RoundedPasswordField extends StatelessWidget {
         controller: controller,
         onChanged: onChanged,
         obscureText: true,
+        keyboardType: TextInputType.emailAddress,
         decoration: InputDecoration(
             hintText: 'Password',
             icon: Icon(

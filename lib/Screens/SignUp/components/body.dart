@@ -51,6 +51,24 @@ class Body extends StatelessWidget {
             RoundedButton(
               text: 'SignUp',
               press: () {
+                if (MyController.username.isEmpty ||
+                    MyController.password.isEmpty) {
+                  SnackBar snackBar = SnackBar(
+                      content:
+                          Text('Both email and password fields are required!'));
+                  return ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
+                bool emailValid = RegExp(
+                        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                    .hasMatch(MyController.username);
+                if (!emailValid) {
+                  return MyController.showError(
+                      context, "Please enter a valid email address!");
+                }
+                if (MyController.password.length < 8) {
+                  return MyController.showError(
+                      context, 'Password must contain more than 7 characters!');
+                }
                 var user = HttpService();
                 var resp = user.createUser(
                     MyController.username, MyController.password);
@@ -88,7 +106,7 @@ class Body extends StatelessWidget {
             AlreadyHaveAnAccountCheck(
               login: false,
               press: () {
-                return Navigator.push(
+                return Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) {

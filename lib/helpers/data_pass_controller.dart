@@ -7,14 +7,8 @@ class MyController {
   static String get username => dataController.text;
   static String get password => passController.text;
 
-  static void displayDialog(BuildContext context, String title, String text) =>
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(title),
-          content: CircularProgressIndicator(
-            backgroundColor: Colors.amber,
-          ),
-        ),
-      );
+  static showError(BuildContext context, String error) {
+    SnackBar snackBar = SnackBar(content: Text(error));
+    return ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 }

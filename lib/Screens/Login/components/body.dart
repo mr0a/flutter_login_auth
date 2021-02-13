@@ -8,17 +8,12 @@ import '../../../components/rounded_password_field.dart';
 import '../../../components/rounded_input_field.dart';
 import './background.dart';
 import '../../../helpers/data_pass_controller.dart';
+import '../../../helpers/http_service.dart';
 
 class Body extends StatelessWidget {
   Body({
     Key key,
   }) : super(key: key);
-
-  final TextEditingController _dataController = TextEditingController();
-  final TextEditingController _passController = TextEditingController();
-
-  String get username => _dataController.text;
-  String get password => _passController.text;
 
   @override
   Widget build(BuildContext context) {
@@ -56,15 +51,38 @@ class Body extends StatelessWidget {
             RoundedButton(
               text: 'LOGIN',
               press: () {
-                print('Username ${MyController.username}');
-                print('Password ${MyController.password}');
-                MyController.displayDialog(context, 'title', 'text');
+                if (MyController.username.isEmpty ||
+                    MyController.password.isEmpty) {
+                  return MyController.showError(
+                      context, 'Both Email and Password fields are required');
+                }
+
+                var user = HttpService();
+                var res = user.signInUser(
+                    MyController.username, MyController.password);
+                res.then(
+                  (value) {
+                    print(value);
+                    if (value.containsKey('refresh')) {
+                      return Navigator.pushAndRemoveUntil(context,
+                          MaterialPageRoute(
+                        builder: (context) {
+                          return Scaffold(
+                            body: Text('Logged In'),
+                          );
+                        },
+                      ), (route) => false);
+                    } else if (value.containsKey('detail')) {
+                      return MyController.showError(context, value['detail']);
+                    }
+                  },
+                );
               },
             ),
             AlreadyHaveAnAccountCheck(
               login: true,
               press: () {
-                return Navigator.push(
+                return Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) {
