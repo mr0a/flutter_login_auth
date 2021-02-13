@@ -7,6 +7,8 @@ import '../../../components/rounded_password_field.dart';
 import '../../../components/rounded_button.dart';
 import 'package:login_ui/Screens/Login/login_screen.dart';
 import 'package:login_ui/components/already_have_an_account.dart';
+import '../../../helpers/data_pass_controller.dart';
+import '../../../helpers/http_service.dart';
 
 import 'or_divider.dart';
 import 'social_icon.dart';
@@ -40,11 +42,48 @@ class Body extends StatelessWidget {
             ),
             RoundedInputField(
               hintText: 'Email',
+              controller: MyController.dataController,
             ),
-            RoundedPasswordField(),
+            RoundedPasswordField(
+              controller: MyController.passController,
+            ),
             // RoundedPasswordField(),
             RoundedButton(
               text: 'SignUp',
+              press: () {
+                var user = HttpService();
+                var resp = user.createUser(
+                    MyController.username, MyController.password);
+                resp.then((value) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text(
+                        value['error']
+                            ? 'Error in creating the account'
+                            : 'Successful',
+                        textAlign: TextAlign.center,
+                      ),
+                      content: Container(
+                        height: size.height * 0.18,
+                        child: Column(
+                          children: [
+                            Text(value['msg']),
+                            SizedBox(
+                              height: size.height * 0.02,
+                            ),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text('Ok')),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                });
+              },
             ),
             AlreadyHaveAnAccountCheck(
               login: false,

@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
 import 'package:login_ui/Screens/SignUp/signup_screen.dart';
 import 'package:login_ui/components/already_have_an_account.dart';
 import 'package:login_ui/components/rounded_button.dart';
 import '../../../components/rounded_password_field.dart';
 import '../../../components/rounded_input_field.dart';
 import './background.dart';
+import '../../../helpers/data_pass_controller.dart';
 
 class Body extends StatelessWidget {
-  const Body({
+  Body({
     Key key,
   }) : super(key: key);
+
+  final TextEditingController _dataController = TextEditingController();
+  final TextEditingController _passController = TextEditingController();
+
+  String get username => _dataController.text;
+  String get password => _passController.text;
 
   @override
   Widget build(BuildContext context) {
@@ -38,16 +46,20 @@ class Body extends StatelessWidget {
             ),
             RoundedInputField(
               hintText: 'Your Email',
-              onChanged: (value) {
-                print(value);
-              },
+              controller: MyController.dataController,
+              onChanged: (value) {},
             ),
             RoundedPasswordField(
               onChanged: (value) {},
+              controller: MyController.passController,
             ),
             RoundedButton(
               text: 'LOGIN',
-              press: () {},
+              press: () {
+                print('Username ${MyController.username}');
+                print('Password ${MyController.password}');
+                MyController.displayDialog(context, 'title', 'text');
+              },
             ),
             AlreadyHaveAnAccountCheck(
               login: true,
