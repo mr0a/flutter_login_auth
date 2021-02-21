@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:login_ui/Screens/SignUp/signup_screen.dart';
 import 'package:login_ui/components/already_have_an_account.dart';
@@ -18,6 +19,7 @@ class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final storage = FlutterSecureStorage();
     return Background(
       child: SingleChildScrollView(
         child: Column(
@@ -62,11 +64,13 @@ class Body extends StatelessWidget {
                     MyController.username, MyController.password);
                 res.then(
                   (value) {
-                    print(value);
+                    // print(value);
                     if (value.containsKey('refresh')) {
                       return Navigator.pushAndRemoveUntil(context,
                           MaterialPageRoute(
                         builder: (context) {
+                          storage.write(
+                              key: 'refreshToken', value: value['refresh']);
                           return Scaffold(
                             body: Text('Logged In'),
                           );

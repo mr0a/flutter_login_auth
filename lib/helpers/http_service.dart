@@ -1,9 +1,22 @@
 import 'dart:convert';
 import 'package:http/http.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class HttpService {
-  final String createUserUrl = "http://10.0.2.2:8000/api/user/create";
-  final String signInUrl = "http://10.0.2.2:8000/api/token/create";
+  static final String createUserUrl =
+      "https://djangowebdev.herokuapp.com/api/user/create";
+  // "http://10.0.2.2:8000/api/user/create/";
+
+  static final String signInUrl =
+      "https://djangowebdev.herokuapp.com/api/token/create";
+  // final String accessToken = "http://127.0.0.1:8000/api/token/refresh/";
+
+  static final String accessTokenUrl =
+      "https://djangowebdev.herokuapp.com/api/token/refresh/";
+  static final String verifyRefreshTokenUrl =
+      "https://djangowebdev.herokuapp.com/api/token/verify";
+
+  static final storage = FlutterSecureStorage();
 
   Future<Map<String, dynamic>> createUser(String email, String password) async {
     Response response = await post(
@@ -34,8 +47,51 @@ class HttpService {
           'email': email,
           'password': password,
         }));
+    // print(response.body);
     return jsonDecode(response.body);
   }
+
+  static Future<bool> getAccessToken(String refresh) async {
+    Response response = await post(Uri.parse(accessTokenUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'refresh': refresh,
+        }));
+
+    Map<String, dynamic> json = jsonDecode(response.body);
+
+    if (json.containsKey('access')) {
+      // print(json['access']);
+      storage.write(key: 'accessToken', value: json['access']);
+      return true;
+    } else {
+      await storage.deleteAll();
+      return false;
+    }
+  }
+
+  // Future<Map<String, String>> verifyRefreshToken(
+  //     String refresh, BuildContext context) async {
+  //   Response response = await post(Uri.parse(verifyRefreshTokenUrl),
+  //       headers: <String, String>{
+  //         'Content-Type': 'application/json; charset=UTF-8',
+  //       },
+  //       body: jsonEncode(<String, String>{
+  //         'token': refresh,
+  //       }));
+
+  //   Map<String, dynamic> json = jsonDecode(response.body);
+
+  //   if (json.containsKey('access')) {
+  //     print(json['access']);
+  //     return json;
+  //   } else {
+  //     storage.deleteAll();
+  //     return {'expired': 'true'};
+  //   }
+  // }
 }
 
 void main() {
